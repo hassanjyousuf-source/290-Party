@@ -315,9 +315,68 @@
     .admin-note .anl{font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.26);margin-bottom:.4rem;}
     code{background:rgba(255,255,255,.08);padding:.08rem .32rem;border-radius:3px;font-size:.78rem;color:var(--sand2);}
 
+    /* Table scroll wrapper for narrow screens */
+    .train-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+    /* ============================================================
+       MOBILE — consolidated fixes for phones (<= 640px)
+       Addresses: nav overflow, table cramping, countdown separators,
+       banner padding, iOS parallax, section padding, card padding,
+       RSVP button width, hero eyebrow spacing.
+       ============================================================ */
     @media(max-width:680px){
       .nav-logo{display:none;}
+      nav{padding:0 .4rem;justify-content:center;}
       nav a{padding:.8rem .55rem;font-size:.6rem;letter-spacing:.1em;}
+    }
+    @media(max-width:640px){
+      /* Nav: tighter padding, allow wrapping if needed */
+      nav{padding:0 .25rem;}
+      .nav-links{flex-wrap:wrap;justify-content:center;}
+      nav a{padding:.7rem .5rem;font-size:.58rem;letter-spacing:.08em;}
+
+      /* Section padding — reduce vertical to save screen real estate */
+      .wrap,.wrap-wide{padding:3rem 1.25rem;}
+
+      /* Hero — tighten banner padding, reduce letter-spacing on tiny eyebrow */
+      header{padding:3.5rem 1rem;}
+      .hero-eyebrow{letter-spacing:.35em;font-size:.65rem;}
+      .campaign-banner{padding:.7rem 1.2rem;}
+      .banner-the,.banner-party{letter-spacing:.25em;}
+      .hero-tagline{font-size:.95rem;padding:.55rem 1.3rem;}
+
+      /* Countdown — smaller blocks, hide decorative separators */
+      .band{padding:1.5rem .75rem;}
+      .cd-row{gap:.3rem;}
+      .cd-block{min-width:58px;padding:.5rem .3rem .35rem;}
+      .cd-num{font-size:1.9rem;}
+      .cd-sep{display:none;}
+
+      /* Why 290 card — tighten padding on narrow screens */
+      .why290{padding:1.5rem 1.3rem;}
+      .why290 h3{font-size:1.15rem;}
+      .why290 p{font-size:.9rem;}
+
+      /* Train table — smaller text, tighter cell padding */
+      .train-table{font-size:.78rem;min-width:500px;}
+      .train-table th,.train-table td{padding:.45rem .55rem;}
+
+      /* RSVP — full-width button is easier to tap */
+      .btn-rsvp{align-self:stretch;width:100%;text-align:center;}
+
+      /* iOS Safari: background-attachment:fixed causes artifacts. Use scroll. */
+      .parallax-section{background-attachment:scroll;}
+
+      /* Admin panel — a touch more breathing room */
+      .admin-panel{padding:1.5rem 1rem;}
+      .admin-search{width:100%;}
+    }
+    @media(max-width:380px){
+      /* Very narrow screens — iPhone SE and below */
+      .banner-num{font-size:clamp(3.8rem,22vw,5.5rem);}
+      .cd-block{min-width:50px;}
+      .cd-num{font-size:1.6rem;}
+      .dcard{padding:1.2rem 1rem;}
     }
   </style>
 </head>
@@ -711,6 +770,7 @@
     <div class="lirr-section">
       <h3>🚂 LIRR — Getting Home After the Fireworks</h3>
       <p class="lirr-sub">Heading back to the city? The Long Island Rail Road runs direct from Sea Cliff Station to Penn Station and Grand Central. Below are approximate late-evening departures — always verify with the MTA.</p>
+      <div class="train-table-wrap">
       <table class="train-table">
         <thead>
           <tr>
@@ -727,6 +787,7 @@
           <tr><td><strong>~11:32 PM</strong></td><td>~12:48 AM</td><td>~12:52 AM</td><td>Last reasonable train</td></tr>
         </tbody>
       </table>
+      </div>
       <p class="train-note">⚠ Times are approximate. Always confirm at the MTA website before the night — schedules may vary on holidays.</p>
       <a class="lirr-link" href="https://www.mta.info/lirr" target="_blank" rel="noopener noreferrer">🚂 Check Official LIRR Schedule →</a>
     </div>
