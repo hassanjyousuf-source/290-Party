@@ -929,7 +929,7 @@
 
     <div class="admin-note">
       <div class="anl">📌 Deployment Note</div>
-      <p>RSVPs stored in <code>localStorage</code>. For live email delivery, sign up at <strong style="color:var(--sand2)">Formspree.io</strong> (free) and add <code>action="https://formspree.io/f/YOUR_ID"</code> to the RSVP form tag — every submission lands in your inbox and Formspree dashboard automatically.</p>
+      <p>RSVPs are now sent to <strong style="color:var(--sand2)">Formspree</strong> and also saved in <code>localStorage</code>. To activate email delivery: create a free account at <a href="https://formspree.io" target="_blank" style="color:var(--sand2)">formspree.io</a>, create a new form, and replace <code>YOUR_FORMSPREE_ID</code> in the script with your real form ID (e.g. <code>abcd1234</code> from <code>https://formspree.io/f/abcd1234</code>). Every RSVP will then land directly in your inbox.</p>
     </div>
   </div>
 </div>
@@ -954,12 +954,71 @@ new QRCode(document.getElementById('qrcode'),{text:'https://www.290party.com',wi
 
 
 // RSVP
-document.getElementById('rsvp-form').addEventListener('submit',function(e){
+// ─────────────────────────────────────────────────────────────────
+// ACTION REQUIRED: Replace YOUR_FORMSPREE_ID below with the real ID
+// from your Formspree dashboard (https://formspree.io).
+// Example: if your endpoint is https://formspree.io/f/abcd1234
+//          set FORMSPREE_ID = 'abcd1234'
+// ─────────────────────────────────────────────────────────────────
+const FORMSPREE_ID = 'mwvarodg';
+
+document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const r={fname:this.fname.value.trim(),lname:this.lname.value.trim(),email:this.email.value.trim(),attending:this.attending.value,guests:this.guests.value,dietary:this.dietary.value.trim(),bday_msg:this.bday_msg.value.trim(),notes:this.notes.value.trim(),submitted:new Date().toLocaleString()};
-  const list=JSON.parse(localStorage.getItem('290_rsvps')||'[]');
-  list.push(r);localStorage.setItem('290_rsvps',JSON.stringify(list));
-  this.style.display='none';document.getElementById('rsvp-ok').style.display='block';
+  const btn = this.querySelector('.btn-rsvp');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const r = {
+    fname:    this.fname.value.trim(),
+    lname:    this.lname.value.trim(),
+    email:    this.email.value.trim(),
+    attending:this.attending.value,
+    guests:   this.guests.value,
+    dietary:  this.dietary.value.trim(),
+    bday_msg: this.bday_msg.value.trim(),
+    notes:    this.notes.value.trim(),
+    submitted:new Date().toLocaleString()
+  };
+
+  // 1. Save to localStorage so the admin dashboard still works locally
+  const list = JSON.parse(localStorage.getItem('290_rsvps') || '[]');
+  list.push(r);
+  localStorage.setItem('290_rsvps', JSON.stringify(list));
+
+  // 2. Send to Formspree so submissions arrive in your inbox
+  if (FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID') {
+    try {
+      const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+        method:  'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          'First Name':       r.fname,
+          'Last Name':        r.lname,
+          'Email':            r.email,
+          'Attending':        r.attending,
+          'Guests':           r.guests,
+          'Dietary Needs':    r.dietary,
+          'Birthday Message': r.bday_msg,
+          'Notes':            r.notes,
+          'Submitted':        r.submitted,
+          '_replyto':         r.email,
+          '_subject':         '🎉 New RSVP — The 290 Party — ' + r.fname + ' ' + r.lname
+        })
+      });
+      if (!res.ok) {
+        console.warn('Formspree responded with status', res.status);
+      }
+    } catch (err) {
+      console.warn('Formspree submission failed:', err);
+      // Still show success — the localStorage copy is saved
+    }
+  } else {
+    console.warn('Formspree ID not set. Update FORMSPREE_ID in the script to enable email delivery.');
+  }
+
+  // 3. Show confirmation
+  this.style.display = 'none';
+  document.getElementById('rsvp-ok').style.display = 'block';
 });
 
 // ADMIN
